@@ -1,0 +1,112 @@
+[gd_scene format=3 uid="uid://byngxfdno01y2"]
+
+[ext_resource type="Script" uid="uid://dhwof4rjgltko" path="res://player/player.gd" id="1"]
+[ext_resource type="Script" uid="uid://dlj2yx5wddnw" path="res://weapons/weapon_holder.gd" id="2"]
+[ext_resource type="Script" uid="uid://bdaemej07ovpf" path="res://player/state_machine.gd" id="3"]
+[ext_resource type="Script" uid="uid://51xqo5ceqs7j" path="res://systems/fear_system.gd" id="4"]
+[ext_resource type="Script" uid="uid://bvkl7sv3cq2wx" path="res://systems/sanity_system.gd" id="5"]
+[ext_resource type="Script" uid="uid://ce68wl0yu3yr5" path="res://interaction/interact_system.gd" id="6"]
+[ext_resource type="Script" path="res://player/player_state_idle.gd" id="7"]
+[ext_resource type="Script" path="res://player/player_state_walk.gd" id="8"]
+[ext_resource type="Script" path="res://player/player_state_sprint.gd" id="9"]
+[ext_resource type="Script" path="res://player/player_state_crouch.gd" id="10"]
+[ext_resource type="Script" path="res://player/player_state_in_air.gd" id="11"]
+[ext_resource type="Script" path="res://weapons/weapon_state_idle.gd" id="12"]
+[ext_resource type="Script" path="res://weapons/weapon_state_ads.gd" id="13"]
+[ext_resource type="Script" path="res://weapons/weapon_state_reloading.gd" id="14"]
+[ext_resource type="Script" path="res://weapons/weapon_state_throwing.gd" id="15"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_stand"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_crouch"]
+radius = 0.35
+height = 1.0
+
+[node name="Player" type="CharacterBody3D" unique_id=53679542 groups=["player"]]
+collision_layer = 2
+script = ExtResource("1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=27335444]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_stand")
+
+[node name="CollisionShape3D_Crouch" type="CollisionShape3D" parent="." unique_id=743267923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_crouch")
+disabled = true
+
+[node name="HeadClearanceRay" type="RayCast3D" parent="." unique_id=1403276616]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+target_position = Vector3(0, 1.08, 0)
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=373767832]
+
+[node name="CameraPivot" type="Node3D" parent="CameraRig" unique_id=1780304250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig/CameraPivot" unique_id=627433995]
+current = true
+fov = 85.0
+
+[node name="WeaponHolder" type="Node3D" parent="." unique_id=928307551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+script = ExtResource("2")
+
+[node name="WeaponPivot" type="Node3D" parent="WeaponHolder" unique_id=1745311113]
+
+[node name="InteractRay" type="RayCast3D" parent="WeaponHolder" unique_id=884406089]
+target_position = Vector3(0, 0, -2.5)
+collision_mask = 5
+collide_with_areas = true
+
+[node name="InteractSystem" type="Node" parent="." unique_id=1135964680]
+script = ExtResource("6")
+
+[node name="InteractRay" type="RayCast3D" parent="InteractSystem" unique_id=396539936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+target_position = Vector3(0, 0, -2.5)
+collision_mask = 5
+collide_with_areas = true
+
+[node name="LocomotionSM" type="Node" parent="." unique_id=1145932609]
+script = ExtResource("3")
+
+[node name="Idle" type="Node" parent="LocomotionSM"]
+script = ExtResource("7")
+
+[node name="Walk" type="Node" parent="LocomotionSM"]
+script = ExtResource("8")
+
+[node name="Sprint" type="Node" parent="LocomotionSM"]
+script = ExtResource("9")
+
+[node name="Crouch" type="Node" parent="LocomotionSM"]
+script = ExtResource("10")
+
+[node name="InAir" type="Node" parent="LocomotionSM"]
+script = ExtResource("11")
+
+[node name="WeaponSM" type="Node" parent="." unique_id=847416483]
+script = ExtResource("3")
+
+[node name="WeaponIdle" type="Node" parent="WeaponSM"]
+script = ExtResource("12")
+
+[node name="ADS" type="Node" parent="WeaponSM"]
+script = ExtResource("13")
+
+[node name="Reloading" type="Node" parent="WeaponSM"]
+script = ExtResource("14")
+
+[node name="Throwing" type="Node" parent="WeaponSM"]
+script = ExtResource("15")
+
+[node name="FearSystem" type="Node" parent="." unique_id=1479300555]
+script = ExtResource("4")
+
+[node name="SanitySystem" type="Node" parent="." unique_id=1812835658]
+script = ExtResource("5")
+
+[node name="AudioPlayer" type="AudioStreamPlayer3D" parent="." unique_id=118435545]
